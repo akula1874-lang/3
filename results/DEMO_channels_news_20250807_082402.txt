@@ -1,0 +1,16 @@
+# TGStat.ru Parser Results - ДЕМОНСТРАЦИЯ
+# Дата: 2025-08-07 08:24:02
+# Категория: Новости
+# Всего найдено: 10
+# ЭТО ДЕМОНСТРАЦИОННЫЕ ДАННЫЕ
+
+1. РИА Новости | https://t.me/rian_ru | 2.1M подписчиков
+2. Медуза — LIVE | https://t.me/meduzalive | 890K подписчиков
+3. RT на русском | https://t.me/rt_russian | 1.5M подписчиков
+4. Коммерсантъ | https://t.me/kommersant | 654K подписчиков
+5. Дождь | https://t.me/tvrain | 432K подписчиков
+6. ТАСС | https://t.me/tass_agency | 1.2M подписчиков
+7. Lenta.ru | https://t.me/lentachold | 567K подписчиков
+8. Московский Комсомолец | https://t.me/mk_ru | 389K подписчиков
+9. Известия | https://t.me/izvestia | 445K подписчиков
+10. Ведомости | https://t.me/vedomosti | 234K подписчиков
