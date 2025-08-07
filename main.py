@@ -226,19 +226,21 @@ class TGStatParser:
                     self.logger.error("❌ Не удалось загрузить ChromeDriver")
                     return False
             
-            # Настройка опций Chrome
+            # Настройка опций Chrome для Windows
             chrome_options = Options()
             
-            # Базовые опции для стабильной работы
+            # Базовые опции для Windows
             chrome_options.add_argument("--no-sandbox")
             chrome_options.add_argument("--disable-dev-shm-usage")
             chrome_options.add_argument("--disable-gpu")
-            chrome_options.add_argument("--disable-web-security")
-            chrome_options.add_argument("--disable-features=VizDisplayCompositor")
+            chrome_options.add_argument("--remote-debugging-port=9222")
             chrome_options.add_argument("--disable-extensions")
             chrome_options.add_argument("--disable-plugins")
             chrome_options.add_argument("--disable-images")
-            chrome_options.add_argument("--disable-javascript")
+            chrome_options.add_argument("--disable-background-timer-throttling")
+            chrome_options.add_argument("--disable-backgrounding-occluded-windows")
+            chrome_options.add_argument("--disable-renderer-backgrounding")
+            chrome_options.add_argument("--disable-background-networking")
             
             # User agent
             user_agent = random.choice(self.user_agents)
@@ -246,10 +248,14 @@ class TGStatParser:
             
             # Размер окна
             chrome_options.add_argument("--window-size=1920,1080")
+            chrome_options.add_argument("--start-maximized")
             
             # Отключаем уведомления об автоматизации
             chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
             chrome_options.add_experimental_option('useAutomationExtension', False)
+            chrome_options.add_experimental_option("prefs", {
+                "profile.default_content_setting_values.notifications": 2
+            })
             
             # Создаем сервис
             service = Service(driver_path)
