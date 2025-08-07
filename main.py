@@ -273,11 +273,40 @@ class TGStatParser:
             # Создаем сервис
             service = Service(driver_path)
             
-            # Инициализируем драйвер
-            self.driver = webdriver.Chrome(service=service, options=chrome_options)
+            try:
+                # Первая попытка - стандартный режим
+                self.driver = webdriver.Chrome(service=service, options=chrome_options)
+            except Exception as e:
+                self.logger.warning(f"⚠️ Стандартный режим не сработал: {e}")
+                self.logger.info("🔧 Пробуем альтернативные настройки...")
+                
+                # Альтернативные настройки для проблемных систем
+                alt_options = Options()
+                alt_options.add_argument("--no-sandbox")
+                alt_options.add_argument("--disable-dev-shm-usage")
+                alt_options.add_argument("--disable-gpu")
+                alt_options.add_argument("--disable-extensions")
+                alt_options.add_argument("--remote-debugging-port=9223")
+                alt_options.add_argument("--disable-web-security")
+                alt_options.add_argument("--allow-running-insecure-content")
+                alt_options.add_argument("--disable-setuid-sandbox")
+                alt_options.add_argument("--disable-background-timer-throttling")
+                alt_options.add_argument("--disable-backgrounding-occluded-windows")
+                alt_options.add_argument("--disable-renderer-backgrounding")
+                
+                # Пробуем альтернативный режим
+                try:
+                    self.driver = webdriver.Chrome(service=service, options=alt_options)
+                    self.logger.info("✅ Альтернативные настройки сработали")
+                except Exception as e2:
+                    self.logger.error(f"❌ Альтернативные настройки тоже не сработали: {e2}")
+                    return False
             
             # Убираем следы автоматизации
-            self.driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+            try:
+                self.driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+            except Exception:
+                pass
             
             self.logger.info("✅ WebDriver успешно настроен")
             return True
