@@ -56,6 +56,61 @@ def test_chrome_installation():
     return None, None
 
 
+def download_chromedriver():
+    """Загрузка ChromeDriver если отсутствует"""
+    print("📥 Загрузка ChromeDriver...")
+    
+    # Создаем папку drivers
+    driver_dir = Path("drivers")
+    driver_dir.mkdir(exist_ok=True)
+    
+    try:
+        # Список URL для загрузки
+        download_urls = [
+            "https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_win32.zip",
+            "https://chromedriver.storage.googleapis.com/113.0.5672.63/chromedriver_win32.zip",
+            "https://chromedriver.storage.googleapis.com/112.0.5615.49/chromedriver_win32.zip"
+        ]
+        
+        for url in download_urls:
+            try:
+                print(f"🔗 Попытка загрузки: {url}")
+                response = requests.get(url, stream=True, timeout=30)
+                response.raise_for_status()
+                
+                # Сохраняем архив
+                driver_zip = driver_dir / "chromedriver.zip"
+                with open(driver_zip, 'wb') as f:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        f.write(chunk)
+                
+                # Извлекаем архив
+                with zipfile.ZipFile(driver_zip, 'r') as zip_ref:
+                    zip_ref.extractall(driver_dir)
+                
+                # Удаляем архив
+                driver_zip.unlink()
+                
+                # Ищем исполняемый файл
+                driver_paths = list(driver_dir.rglob("chromedriver.exe"))
+                if driver_paths:
+                    print(f"✅ ChromeDriver загружен: {driver_paths[0]}")
+                    return True
+                
+                break
+                
+            except Exception as e:
+                print(f"⚠️ Ошибка загрузки с {url}: {e}")
+                continue
+        
+        print("❌ Не удалось загрузить ChromeDriver")
+        return False
+        
+    except Exception as e:
+        print(f"❌ Критическая ошибка загрузки: {e}")
+        return False
+
+
 def test_chromedriver_basic():
     """Базовый тест ChromeDriver"""
     print("\n🧪 БАЗОВЫЙ ТЕСТ CHROMEDRIVER")
@@ -66,8 +121,15 @@ def test_chromedriver_basic():
     driver_paths = list(driver_dir.rglob("chromedriver.exe"))
     
     if not driver_paths:
-        print("❌ ChromeDriver не найден в папке drivers/")
-        return False
+        print("⚠️ ChromeDriver не найден, попытка загрузки...")
+        if not download_chromedriver():
+            return False
+        
+        # Ищем снова после загрузки
+        driver_paths = list(driver_dir.rglob("chromedriver.exe"))
+        if not driver_paths:
+            print("❌ ChromeDriver все еще не найден")
+            return False
     
     driver_path = str(driver_paths[0])
     print(f"📁 Найден ChromeDriver: {driver_path}")
