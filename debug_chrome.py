@@ -48,8 +48,25 @@ def test_chrome_installation():
                     print(f"🔢 Версия: {version}")
                     return chrome_path, version
             except Exception as e:
-                print(f"⚠️ Не удалось получить версию: {e}")
+                print(f"⚠️ Не удалось получить версию через --version: {e}")
                 
+            # Альтернативный способ - через реестр/WMI  
+            try:
+                result = subprocess.run([
+                    'wmic', 'datafile', 'where', f'name="{chrome_path.replace(chr(92), chr(92)+chr(92))}"',
+                    'get', 'Version', '/value'
+                ], capture_output=True, text=True, timeout=10)
+                
+                if result.returncode == 0:
+                    for line in result.stdout.strip().split('\n'):
+                        if line.startswith('Version='):
+                            version = line.split('=')[1].strip()
+                            print(f"🔢 Версия: {version}")
+                            return chrome_path, version
+            except Exception as e:
+                print(f"⚠️ Не удалось получить версию через wmic: {e}")
+                
+            print("🔢 Версия: не удалось определить")
             return chrome_path, "неизвестна"
     
     print("❌ Chrome не найден")
