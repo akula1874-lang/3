@@ -1,0 +1,15 @@
+{
+  "timestamp": "/app",
+  "results": {
+    "Python версия": true,
+    "Зависимости": true,
+    "Интернет соединение": true,
+    "Chrome установка": false,
+    "Файловая структура": true,
+    "UTF-8 кодировка": true,
+    "Selenium базовый": true
+  },
+  "passed": 6,
+  "total": 7,
+  "status": "FAIL"
+}
