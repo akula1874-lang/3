@@ -153,23 +153,36 @@ class TGStatParser:
         try:
             self.logger.info(f"📥 Скачивание ChromeDriver версии {version}...")
             
-            # URL для скачивания ChromeDriver
-            base_url = "https://chromedriver.storage.googleapis.com"
+            # Список URL для попыток загрузки
+            download_urls = []
             
-            # Получаем доступные версии
-            try:
-                versions_url = f"{base_url}/{version}/chromedriver_win32.zip"
-                response = requests.head(versions_url, timeout=10)
-                
-                if response.status_code != 200:
-                    # Пробуем новый формат URL для более новых версий
-                    versions_url = f"https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{version}.0.6167.85/win64/chromedriver-win64.zip"
+            # Для Chrome 115+ используем новый формат
+            if int(version) >= 115:
+                # Новый Chrome for Testing API
+                download_urls.extend([
+                    f"https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{version}.0.0.0/win64/chromedriver-win64.zip",
+                    f"https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{version}.0.6312.62/win64/chromedriver-win64.zip",
+                    f"https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/stable/win64/chromedriver-win64.zip"
+                ])
+            
+            # Для старых версий Chrome используем старый API
+            download_urls.extend([
+                f"https://chromedriver.storage.googleapis.com/{version}.0.0.0/chromedriver_win32.zip",
+                "https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_win32.zip",
+                "https://chromedriver.storage.googleapis.com/113.0.5672.63/chromedriver_win32.zip"
+            ])
+            
+            # Пробуем каждый URL
+            for versions_url in download_urls:
+                try:
+                    self.logger.info(f"🔗 Попытка загрузки: {versions_url}")
                     response = requests.head(versions_url, timeout=10)
-                    
-                    if response.status_code != 200:
-                        # Fallback на стабильную версию
-                        versions_url = "https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_win32.zip"
-            except:
+                    if response.status_code == 200:
+                        break
+                except:
+                    continue
+            else:
+                # Если ничего не работает, используем последний стабильный
                 versions_url = "https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_win32.zip"
             
             # Скачиваем ChromeDriver
