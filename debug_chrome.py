@@ -171,8 +171,14 @@ def test_chromedriver_headless():
     driver_paths = list(driver_dir.rglob("chromedriver.exe"))
     
     if not driver_paths:
-        print("❌ ChromeDriver не найден")
-        return False
+        print("⚠️ ChromeDriver не найден, попытка загрузки...")
+        if not download_chromedriver():
+            return False
+        
+        driver_paths = list(driver_dir.rglob("chromedriver.exe"))
+        if not driver_paths:
+            print("❌ ChromeDriver не найден")
+            return False
     
     driver_path = str(driver_paths[0])
     
