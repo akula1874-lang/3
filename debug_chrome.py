@@ -9,6 +9,8 @@ import os
 import sys
 import time
 import subprocess
+import requests
+import zipfile
 from pathlib import Path
 
 try:
